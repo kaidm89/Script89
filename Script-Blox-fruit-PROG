@@ -1,0 +1,385 @@
+-- مكتبة Orion
+local OrionLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/shlexware/Orion/main/source"))()
+
+-- نافذة السكربت
+local window = OrionLib:MakeWindow({
+    Name = "PROG - Ultimate Script",
+    HidePremium = false,
+    SaveConfig = true,
+    ConfigFolder = "PROG_Config",
+    IntroText = "PROG - Blox Fruits"
+})
+
+-- متغيرات رئيسية
+local autoLevel = false
+local autoCollect = false
+local autoBuyFruits = false
+local autoBossFarm = false
+local serverHop = false
+local autoStatAllocation = false
+local autoChestCollect = false
+local autoRaid = false
+local autoTeamSwitch = false
+local killAura = false
+local espEnabled = false
+local autoFruitSniper = false
+local safeZoneEnabled = false
+local customWaypoint = nil
+local selectedStat = "Melee"
+local selectedTeam = "Pirates"
+local selectedWeapon = nil
+local autoFruitFinder = false
+local autoStoreFruits = false
+local autoDefenseEnabled = false
+local damageCounter = 0
+local targetHelper = false
+local autoHelperBot = false
+local currentLanguage = "English"  -- اللغة الافتراضية (الإنجليزية)
+
+-- دالة لتبديل اللغة
+local function SwitchLanguage(language)
+    currentLanguage = language
+    OrionLib:MakeNotification({
+        Name = "Language Changed",
+        Content = "Language changed to " .. language,
+        Image = "rbxassetid://4483362458",
+        Time = 5
+    })
+end
+
+-- قسم التحكم باللغة (Language Tab)
+local languageTab = window:MakeTab({
+    Name = "Language Settings",
+    Icon = "rbxassetid://4483362458",
+    PremiumOnly = false
+})
+
+-- تحديد اللغة (English/Arabic)
+languageTab:AddDropdown({
+    Name = "Select Language",
+    Default = currentLanguage,
+    Options = {"English", "Arabic"},
+    Callback = function(option)
+        SwitchLanguage(option)
+    end
+})
+
+-- قسم التحكم الأساسي (Main Tab)
+local mainTab = window:MakeTab({
+    Name = "Main",
+    Icon = "rbxassetid://4483362458",
+    PremiumOnly = false
+})
+
+-- وظيفة Auto Level
+mainTab:AddToggle({
+    Name = "Auto Level",
+    Default = false,
+    Callback = function(value)
+        autoLevel = value
+        if autoLevel then
+            AutoLevel()
+        end
+    end
+})
+
+-- Auto Collect Items
+mainTab:AddToggle({
+    Name = "Auto Collect Items",
+    Default = false,
+    Callback = function(value)
+        autoCollect = value
+        if autoCollect then
+            AutoCollect()
+        end
+    end
+})
+
+-- Auto Buy Fruits
+mainTab:AddToggle({
+    Name = "Auto Buy Fruits",
+    Default = false,
+    Callback = function(value)
+        autoBuyFruits = value
+        if autoBuyFruits then
+            AutoBuyFruits()
+        end
+    end
+})
+
+-- Auto Boss Farm
+mainTab:AddToggle({
+    Name = "Auto Boss Farm",
+    Default = false,
+    Callback = function(value)
+        autoBossFarm = value
+        if autoBossFarm then
+            AutoBossFarm()
+        end
+    end
+})
+
+-- Auto Chest Collect
+mainTab:AddToggle({
+    Name = "Auto Chest Collect",
+    Default = false,
+    Callback = function(value)
+        autoChestCollect = value
+        if autoChestCollect then
+            AutoChestCollect()
+        end
+    end
+})
+
+-- Auto Raid
+mainTab:AddToggle({
+    Name = "Auto Raid",
+    Default = false,
+    Callback = function(value)
+        autoRaid = value
+        if autoRaid then
+            StartAutoRaid()
+        end
+    end
+})
+
+-- Auto Team Switch
+mainTab:AddToggle({
+    Name = "Auto Team Switch",
+    Default = false,
+    Callback = function(value)
+        autoTeamSwitch = value
+        if autoTeamSwitch then
+            AutoTeamSwitch()
+        end
+    end
+})
+
+-- Safe Zone Teleport
+mainTab:AddToggle({
+    Name = "Safe Zone Teleport",
+    Default = false,
+    Callback = function(value)
+        safeZoneEnabled = value
+        if safeZoneEnabled then
+            SafeZoneTeleport()
+        end
+    end
+})
+
+-- Auto Fruit Finder
+mainTab:AddToggle({
+    Name = "Auto Fruit Finder",
+    Default = false,
+    Callback = function(value)
+        autoFruitFinder = value
+        if autoFruitFinder then
+            FruitFinder()
+        end
+    end
+})
+
+-- Auto Store Fruits
+mainTab:AddToggle({
+    Name = "Auto Store Fruits",
+    Default = false,
+    Callback = function(value)
+        autoStoreFruits = value
+        if autoStoreFruits then
+            AutoStoreFruits()
+        end
+    end
+})
+
+-- Kill Aura
+mainTab:AddToggle({
+    Name = "Kill Aura",
+    Default = false,
+    Callback = function(value)
+        killAura = value
+        if killAura then
+            StartKillAura()
+        end
+    end
+})
+
+-- ESP
+mainTab:AddToggle({
+    Name = "Enable ESP",
+    Default = false,
+    Callback = function(value)
+        espEnabled = value
+        if espEnabled then
+            EnableESP()
+        end
+    end
+})
+
+-- Target Helper
+mainTab:AddToggle({
+    Name = "Enable Target Helper",
+    Default = false,
+    Callback = function(value)
+        targetHelper = value
+        if targetHelper then
+            TargetHelper()
+        end
+    end
+})
+
+-- Auto Helper Bot
+mainTab:AddToggle({
+    Name = "Enable Auto Helper Bot",
+    Default = false,
+    Callback = function(value)
+        autoHelperBot = value
+        if autoHelperBot then
+            AutoHelperBot()
+        end
+    end
+})
+
+-- نقاط مخصصة
+mainTab:AddButton({
+    Name = "Set Custom Waypoint",
+    Callback = function()
+        customWaypoint = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
+        OrionLib:MakeNotification({
+            Name = "Waypoint Set",
+            Content = "Your custom waypoint has been saved!",
+            Image = "rbxassetid://4483362458",
+            Time = 5
+        })
+    end
+})
+
+mainTab:AddButton({
+    Name = "Teleport to Waypoint",
+    Callback = function()
+        if customWaypoint then
+            game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = customWaypoint
+        else
+            OrionLib:MakeNotification({
+                Name = "No Waypoint Found",
+                Content = "You need to set a waypoint first!",
+                Image = "rbxassetid://4483362458",
+                Time = 5
+            })
+        end
+    end
+})
+
+-- Damage Counter
+local damageLabel = mainTab:AddLabel("Damage Counter: 0")
+game:GetService("RunService").RenderStepped:Connect(function()
+    damageLabel:Set("Damage Counter: " .. tostring(damageCounter))
+end)
+
+-- تخصيص النقاط
+mainTab:AddDropdown({
+    Name = "Select Stat to Upgrade",
+    Default = "Melee",
+    Options = {"Melee", "Defense", "Sword", "Gun", "Blox Fruit"},
+    Callback = function(option)
+        selectedStat = option
+    end
+})
+
+-- الدوال الرئيسية
+function AutoLevel()
+    while autoLevel do
+        -- تنفيذ التقدم بالمستوى
+        task.wait(1)
+    end
+end
+
+function AutoCollect()
+    while autoCollect do
+        -- جمع العناصر
+        task.wait(1)
+    end
+end
+
+function AutoBuyFruits()
+    while autoBuyFruits do
+        -- شراء الفواكه
+        task.wait(5)
+    end
+end
+
+function AutoBossFarm()
+    while autoBossFarm do
+        -- قتل الزعماء
+        task.wait(2)
+    end
+end
+
+function SafeZoneTeleport()
+    while safeZoneEnabled do
+        if game.Players.LocalPlayer.Character.Humanoid.Health < 50 then
+            game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(0, 100, 0)
+        end
+        task.wait(2)
+    end
+end
+
+function FruitFinder()
+    while autoFruitFinder do
+        for _, fruit in pairs(game.Workspace:GetChildren()) do
+            if fruit:IsA("Tool") and fruit.Name:find("Fruit") then
+                game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = fruit.Handle.CFrame
+                break
+            end
+        end
+        task.wait(10)
+    end
+end
+
+function AutoStoreFruits()
+    while autoStoreFruits do
+        -- تخزين الفواكه النادرة
+        task.wait(5)
+    end
+end
+
+function StartKillAura()
+    while killAura do
+        -- تنفيذ الهجمات القريبة
+        task.wait(0.5)
+    end
+end
+
+function EnableESP()
+    -- تفعيل ESP
+end
+
+function TargetHelper()
+    while targetHelper do
+        -- تحديد الأعداء الأقرب
+        local closestTarget = nil
+        local shortestDistance = math.huge
+        for _, enemy in pairs(game.Workspace:GetChildren()) do
+            if enemy:FindFirstChild("Humanoid") and enemy.Humanoid.Health > 0 then
+                local distance = (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - enemy.HumanoidRootPart.Position).magnitude
+                if distance < shortestDistance then
+                    closestTarget = enemy
+                    shortestDistance = distance
+                end
+            end
+        end
+        if closestTarget then
+            game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = closestTarget.HumanoidRootPart.CFrame
+        end
+        task.wait(1)
+    end
+end
+
+function AutoHelperBot()
+    while autoHelperBot do
+        -- بوت المساعد (القيام بمهمات)
+        task.wait(2)
+    end
+end
+
+-- إنهاء السكربت
+OrionLib:Init()
